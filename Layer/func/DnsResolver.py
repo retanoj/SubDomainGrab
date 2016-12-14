@@ -20,6 +20,7 @@ class DnsResolver(object):
         # dnsClient.domain = dns.name.from_text('.')
         dnsClient.nameservers = self.DnsServer
         dnsClient.timeout     = self.TimeOut
+        dnsClient.lifetime    = self.TimeOut
 
         try:
             dnsMessage = dnsClient.query(self.Domain)
