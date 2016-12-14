@@ -29,6 +29,14 @@ class DnsResolver(object):
                     if item.rdtype == dns.rdatatype.from_text('A'):
                         self.isSuccess = True
                         self.Records.append(item.address)
+        except dns.resolver.Timeout:
+            dnsClient.nameservers = "119.29.29.29"
+            dnsMessage = dnsClient.query(self.Domain)
+            for dnsRecord in dnsMessage.response.answer:
+                for item in dnsRecord.items:
+                    if item.rdtype == dns.rdatatype.from_text('A'):
+                        self.isSuccess = True
+                        self.Records.append(item.address)
         except Exception, e:
             logging.error("DnsResolver on %s: %s" % (self.Domain, str(e)) )
             self.isSuccess = False
