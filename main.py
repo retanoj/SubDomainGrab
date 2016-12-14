@@ -9,8 +9,6 @@ if __name__ == '__main__':
                         metavar="", help="Target domain.")
     parser.add_argument("-t", "--timeout",
                         metavar="", help="Global timeout.")
-    parser.add_argument("--dns", dest="dnsServer",
-                        metavar="", help="DNS Server to use.")
     parser.add_argument("-p", "--ports",
                         metavar="", help="Ports to scan, default:[80,443].")
     parser.add_argument("--dict", dest="dicPath",

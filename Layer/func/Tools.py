@@ -5,7 +5,9 @@ import logging
 import os
 import re
 import requests
+import random
 import socket
+import time
 import traceback
 from struct import unpack
 
@@ -93,7 +95,8 @@ def analysisDomain(domain):
         globals.domainCache.insert(domain)
 
     logging.info("analysis domain %s" % domain)
-    dns = DnsResolver(domain, dnsServer=config.dnsServer, timeout=config.timeout)
+    _dnsServer = random.choice(config.dnsServerList)
+    dns = DnsResolver(domain, dnsServer=_dnsServer, timeout=config.timeout)
     if not dns.isSuccess:
         return  # 解析失败
     _domain_data = globals.DomainData(domain)
@@ -119,4 +122,3 @@ def analysisDomain(domain):
             _domain_data.server = CheckWeb("https://" + domain)
 
     globals.domainList.insert(_domain_data)
-

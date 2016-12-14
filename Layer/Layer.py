@@ -23,8 +23,6 @@ def main(args):
 
     if getattr(args, 'timeout', None):
         Config.timeout = args.timeout
-    if getattr(args, 'dnsServer', None):
-        Config.dnsServer = args.dnsServer
     if getattr(args, 'ports', None):
         ports = map(lambda _:int(_), args.ports.strip('[]').split(','))
         Config.ports = ports
