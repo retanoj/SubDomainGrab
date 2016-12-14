@@ -96,6 +96,8 @@ def analysisDomain(domain):
 
     logging.info("analysis domain %s" % domain)
     _dnsServer = random.choice(config.dnsServerList)
+    if config.slow:
+        time.sleep(random.random())
     dns = DnsResolver(domain, dnsServer=_dnsServer, timeout=config.timeout)
     if not dns.isSuccess:
         return  # 解析失败

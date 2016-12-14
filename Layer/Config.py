@@ -11,6 +11,9 @@ fake_headers = {
 # 全局超时时间
 timeout = 3
 
+# 慢扫描
+slow = False
+
 # 线程池大小
 poolNum = 100
 

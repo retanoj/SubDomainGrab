@@ -32,6 +32,8 @@ def main(args):
         Config.checkPorts = args.checkPorts
     if getattr(args, 'checkServer', False):
         Config.checkServer = args.checkServer
+    if getattr(args, 'slow', False):
+        Config.slow = args.slow
 
     if not os.path.exists(Config.dicPath):
         logging.error("%s not exist!" % Config.dicPath)

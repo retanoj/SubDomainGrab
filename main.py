@@ -21,5 +21,7 @@ if __name__ == '__main__':
                         help="Close crawl mode.")
     parser.add_argument("--no-brute", dest="noBruteMode", action="store_true", default=False,
                         help="Close brute mode.")
+    parser.add_argument("--slow", action="store_true", default=False,
+                        help="Enable slow scan mode.")
     args = parser.parse_args()
     main(args)
