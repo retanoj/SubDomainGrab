@@ -39,8 +39,8 @@ def main(args):
         logging.error("%s not exist!" % Config.dicPath)
         sys.exit(-1)
 
-    if CheckExtensiveDomain(domain):
-        logging.warning("%s has extensive domain name analysis" % domain)
+    logging.info("Checking %s has extensive analysis or not" % domain)
+    CheckExtensiveDomain(domain)
 
     if not getattr(args, 'noCrawlMode', False):
         globals.curr_mode = globals.CRAWL_MODE
