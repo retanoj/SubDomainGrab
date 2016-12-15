@@ -1,5 +1,7 @@
 # coding:utf-8
 
+import json
+
 # 泛解析黑名单IP
 blackIp = []
 
@@ -13,6 +15,7 @@ STEP = 10000
 CRAWL_MODE = 0
 BRUTE_MODE = 1
 curr_mode = CRAWL_MODE
+
 
 # 数据结构Domain
 class DomainData(object):
@@ -35,6 +38,13 @@ class DomainData(object):
             self.server
         )
 
+    def to_json(self):
+        return json.dumps({
+            "Domain": self.domain,
+            "A": self.A_Records,
+            "Ports": self.ports,
+            "Server": self.server
+        })
 
 class DomainList(object):
     domain_list = []

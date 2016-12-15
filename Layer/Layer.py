@@ -62,4 +62,4 @@ def main(args):
 def report():
     logging.info("Total got %d" % len(globals.domainList))
     for _domain in globals.domainList.domain_list:
-        print _domain
+        print _domain.to_json()
