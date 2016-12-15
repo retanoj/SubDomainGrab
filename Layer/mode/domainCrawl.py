@@ -49,7 +49,7 @@ class domainCrawl(object):
 
         result = []
         try:
-            req = requests.post(url, headers=fake_headers, data=data, timeout=config.timeout)
+            req = requests.post(url, headers=fake_headers, data=data, timeout=config.timeout * 2)
             req.encoding = 'GBK'
             content = req.text
             _domain = re.findall(domain_re, content)
@@ -65,7 +65,7 @@ class domainCrawl(object):
 
         result = []
         try:
-            r = requests.get(url, headers=config.fake_headers, timeout=config.timeout).content
+            r = requests.get(url, headers=config.fake_headers, timeout=config.timeout * 2).content
             subs = re.compile(r'(?<="\>\r\n<li>).*?(?=</li>)')
             _domain = subs.findall(r)
             for sub in _domain:
@@ -79,7 +79,7 @@ class domainCrawl(object):
     def __alexa_cn(self):
         def get_sign_alexa_cn():
             url = 'http://www.alexa.cn/index.php?url={0}'.format(self.domain)
-            r = requests.get(url, headers=config.fake_headers, timeout=config.timeout).text
+            r = requests.get(url, headers=config.fake_headers, timeout=config.timeout * 2).text
             sign = re.compile(r'(?<=showHint\(\').*?(?=\'\);)').findall(r)
             if len(sign) >= 1:
                 return sign[0].split(',')
@@ -104,7 +104,7 @@ class domainCrawl(object):
 
         result = []
         try:
-            r = requests.get(url, headers=config.fake_headers, data=payload, timeout=config.timeout).text
+            r = requests.get(url, headers=config.fake_headers, data=payload, timeout=config.timeout * 2).text
 
             for sub in r.split('*')[-1:][0].split('__'):
                 if sub.split(':')[0:1][0] == 'OTHER':
