@@ -42,14 +42,24 @@ def is_domain(domain):
 
 def CheckExtensiveDomain(domain):
     isExtensiveDomain = False
-    for i in xrange(3):
-        checkdns = DnsResolver(randomStr(8) + '.' + domain, config.dnsServer, config.timeout)
-        if checkdns.isSuccess:
-            isExtensiveDomain = True
-            for item in checkdns.Records:
-                globals.blackIp.append(item)
 
-    globals.blackIp = list(set(globals.blackIp))
+    count = 0
+    for i in xrange(3):
+        checkdns = DnsResolver(randomStr(8) + '.' + domain, timeout=config.timeout)
+        if checkdns.isSuccess:
+            count += 1
+    if count == 3:
+        logging.warning("%s has extensive domain name analysis" % domain)
+        isExtensiveDomain = True
+
+    if isExtensiveDomain:
+        for _dnsServer in config.dnsServerList:
+            dns = DnsResolver(randomStr(8) + '.' + domain, _dnsServer, config.timeout)
+            if dns.isSuccess:
+                for item in dns.Records:
+                    globals.blackIp.append(item)
+
+        globals.blackIp = list(set(globals.blackIp))
     return isExtensiveDomain
 
 
@@ -101,23 +111,23 @@ def analysisDomain(domain):
     dns = DnsResolver(domain, dnsServer=_dnsServer, timeout=config.timeout)
     if not dns.isSuccess:
         return  # 解析失败
-    _domain_data = globals.DomainData(domain)
-    _domain_data.A_Records = dns.Records
 
     _white_ip = None
     for ip in dns.Records:
-        if ip not in globals.blackIp and not innerIp(ip):
+        if ip not in globals.blackIp:
             _white_ip = ip
             break
     if not _white_ip:
-        globals.domainList.insert(_domain_data)
-        return  # 全部命中黑名单(泛解析, 内网IP)
+        return  # 全部命中黑名单(泛解析)
 
-    if config.checkPorts:
+    _domain_data = globals.DomainData(domain)
+    _domain_data.A_Records = dns.Records
+
+    if config.checkPorts and not innerIp(_white_ip):
         openPorts = ScanPort(_white_ip, config.ports)
         _domain_data.ports = openPorts
 
-    if config.checkServer:
+    if config.checkServer and not innerIp(_white_ip):
         if 80 in _domain_data.ports:
             _domain_data.server = CheckWeb("http://" + domain)
         elif 443 in _domain_data.ports:
