@@ -112,13 +112,14 @@ def analysisDomain(domain):
     if not dns.isSuccess:
         return  # 解析失败
 
-    _white_ip = None
-    for ip in dns.Records:
-        if ip not in globals.blackIp:
-            _white_ip = ip
-            break
-    if not _white_ip:
-        return  # 全部命中黑名单(泛解析)
+    if globals.curr_mode == globals.BRUTE_MODE: # 爆破模式才检查泛解析IP, 默认信任抓取回来的domain
+        _white_ip = None
+        for ip in dns.Records:
+            if ip not in globals.blackIp:
+                _white_ip = ip
+                break
+        if not _white_ip:
+            return  # 全部命中黑名单(泛解析)
 
     _domain_data = globals.DomainData(domain)
     _domain_data.A_Records = dns.Records
