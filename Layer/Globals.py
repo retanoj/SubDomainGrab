@@ -4,6 +4,7 @@ import json
 
 # 泛解析黑名单IP
 blackIp = []
+itemSampleSim = None
 
 # 枚举字典
 domainPrefix = []

@@ -40,4 +40,7 @@ checkPorts = False
 # 扫描服务器类型开关
 checkServer = False
 
-dicPath = os.path.join(LayerPath, 'dic', 'subnames.txt')
+# 文本相似度开关
+simhash = False
+
+dicPath = os.path.join(LayerPath, 'dic', 'small_subnames.txt')

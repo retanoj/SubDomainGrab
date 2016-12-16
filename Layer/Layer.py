@@ -34,6 +34,8 @@ def main(args):
         Config.checkServer = args.checkServer
     if getattr(args, 'slow', False):
         Config.slow = args.slow
+    if getattr(args, 'simhash', False):
+        Config.simhash = args.simhash
 
     if not os.path.exists(Config.dicPath):
         logging.error("%s not exist!" % Config.dicPath)

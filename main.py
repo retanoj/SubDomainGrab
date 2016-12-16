@@ -23,5 +23,7 @@ if __name__ == '__main__':
                         help="Close brute mode.")
     parser.add_argument("--slow", action="store_true", default=False,
                         help="Enable slow scan mode.")
+    parser.add_argument("--simhash", action="store_true", default=False,
+                        help="Enable Simhash.(It's Slow!!)")
     args = parser.parse_args()
     main(args)
