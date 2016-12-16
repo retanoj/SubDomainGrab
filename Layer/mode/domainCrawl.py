@@ -6,7 +6,7 @@ import re
 from multiprocessing.dummy import Pool
 
 import Layer.Config as config
-from Layer.func.Tools import analysisDomain, is_domain
+from Layer.func.Tools import analysisDomain, is_domain, send_http
 
 class domainCrawl(object):
     def __init__(self,  domain):
@@ -38,18 +38,16 @@ class domainCrawl(object):
     def __ilinks(self):
         url = "http://i.links.cn/subdomain/"
         domain_re = r"id=domain\d+\s+value=\"http://(.*)\"><input"
-        fake_headers = config.fake_headers.copy()
         _fake_headers = {
             "Content-Type": "application/x-www-form-urlencoded",
             "Referer": "http://i.links.cn/subdomain/"
         }
-        fake_headers.update(_fake_headers)
 
         data = {"domain": self.domain, "b2": 1, "b3": 1, "b4": 1}
 
         result = []
         try:
-            req = requests.post(url, headers=fake_headers, data=data, timeout=config.timeout * 2)
+            req = send_http('post', url, headers=_fake_headers, payload=data, timeout=config.timeout * 2)
             req.encoding = 'GBK'
             content = req.text
             _domain = re.findall(domain_re, content)
@@ -65,7 +63,7 @@ class domainCrawl(object):
 
         result = []
         try:
-            r = requests.get(url, headers=config.fake_headers, timeout=config.timeout * 2).content
+            r = send_http('get', url, timeout=config.timeout * 2).content
             subs = re.compile(r'(?<="\>\r\n<li>).*?(?=</li>)')
             _domain = subs.findall(r)
             for sub in _domain:
@@ -79,7 +77,7 @@ class domainCrawl(object):
     def __alexa_cn(self):
         def get_sign_alexa_cn():
             url = 'http://www.alexa.cn/index.php?url={0}'.format(self.domain)
-            r = requests.get(url, headers=config.fake_headers, timeout=config.timeout * 2).text
+            r = send_http('get', url, timeout=config.timeout * 2).text
             sign = re.compile(r'(?<=showHint\(\').*?(?=\'\);)').findall(r)
             if len(sign) >= 1:
                 return sign[0].split(',')
@@ -104,7 +102,7 @@ class domainCrawl(object):
 
         result = []
         try:
-            r = requests.get(url, headers=config.fake_headers, data=payload, timeout=config.timeout * 2).text
+            r = send_http('get', url, data=payload, timeout=config.timeout * 2).text
 
             for sub in r.split('*')[-1:][0].split('__'):
                 if sub.split(':')[0:1][0] == 'OTHER':

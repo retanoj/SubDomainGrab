@@ -11,11 +11,13 @@ import time
 import traceback
 from struct import unpack
 
+import Simhashit as Sim
 import Layer.Globals as globals
 import Layer.Config as config
 from DnsResolver import DnsResolver
 
 PortCache = collections.defaultdict(list)  # {host:[ports]}
+
 
 def randomStr(n=5):
     return ''.join(map(lambda xx: (hex(ord(xx))[2:]), os.urandom(16)))[:n]
@@ -40,6 +42,17 @@ def is_domain(domain):
         return True if domain and domain_regex.match(domain) else False
 
 
+def send_http(method, url, headers={}, payload={}, timeout=config.timeout):
+    fake_headers = config.fake_headers.copy()
+    fake_headers.update(headers)
+    func = getattr(requests, method, 'head')
+    if method == 'get' or method == 'head':
+        return func(url, headers=fake_headers, timeout=timeout, verify=False)
+    elif method == 'post':
+        return func(url, headers=fake_headers, data=payload, timeout=timeout, verify=False)
+    return None
+
+
 def CheckExtensiveDomain(domain):
     isExtensiveDomain = False
 
@@ -53,6 +66,12 @@ def CheckExtensiveDomain(domain):
         isExtensiveDomain = True
 
     if isExtensiveDomain:
+        if config.simhash:
+            try:
+                text = send_http('get', 'http://' +randomStr(8) + '.' + domain).text
+                globals.itemSampleSim = Sim.sim(text)
+            except:
+                pass
         for _dnsServer in config.dnsServerList:
             dns = DnsResolver(randomStr(8) + '.' + domain, _dnsServer, config.timeout)
             if dns.isSuccess:
@@ -91,7 +110,7 @@ def ScanPort(host, ports):
 def CheckWeb(url):
     try:
         logging.debug("CheckWeb on %s" % url)
-        req = requests.head(url, headers=config.fake_headers, timeout=config.timeout, verify=False)
+        req = send_http('head', url)
         return req.headers.get("Server", "")
     except Exception, e:
         logging.error("CheckWeb on %s: %s" % (url, str(e)) )
@@ -119,7 +138,18 @@ def analysisDomain(domain):
                 _white_ip = ip
                 break
         if not _white_ip:
-            return  # 全部命中黑名单(泛解析)
+            if config.simhash and globals.itemSampleSim is not None:
+                try:
+                    text = send_http('get', 'http://'+domain).text
+                    if Sim.distance(globals.itemSampleSim, Sim.sim(text)) < 3:
+                        logging.debug("Simhash say %s is extensive result" % domain)
+                        return # 文本相似
+                except Exception, e:
+                    logging.error("Simhash Error on %s: %s" % (domain, str(e)))
+                    return
+            else:
+                logging.debug("BlackIp say %s is extensive result" % domain)
+                return  # 全部命中黑名单(泛解析)
 
     _domain_data = globals.DomainData(domain)
     _domain_data.A_Records = dns.Records
