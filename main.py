@@ -7,7 +7,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="子域名挖掘机Python版")
     parser.add_argument("-d", "--domain",
                         metavar="", help="Target domain.")
-    parser.add_argument("-t", "--timeout",
+    parser.add_argument("-t", "--timeout", type=int,
                         metavar="", help="Global timeout.")
     parser.add_argument("--dns", dest="dnsServer",
                         metavar="", help="DNS Server to use.")
